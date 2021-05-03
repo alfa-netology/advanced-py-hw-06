@@ -12,3 +12,7 @@ def get_articles(browser, url):
     browser.open(url)
     page = browser.get_current_page()
     return page.find_all('article', class_='post post_preview')
+
+def get_article_full_text(browser, link):
+    browser.open(link)
+    return browser.get_current_page().find('div', class_='post__text').text

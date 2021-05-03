@@ -1,30 +1,21 @@
-import re
 import mechanicalsoup
+
 from application import utilites
+from application import homework
 
-
-def main():
-    KEYWORDS = ['дизайн', 'фото', 'web', 'python']
-    keywords_pattern = '|'.join([f"\\b{word}\\b" for word in KEYWORDS])
-
-    url = 'https://habr.com/ru/all/'
+def main(url, keywords):
     browser = mechanicalsoup.StatefulBrowser()
-
     articles = utilites.get_articles(browser, url)
+    find_in_preview, find_in_article = homework.find_articles_by_keywords(browser, articles, keywords)
 
-    find_keywords_in_preview = ()
+    print(f'\nНайдено статей по ключевым словам в превью [{len(find_in_preview)}]:')
+    print(*find_in_preview, sep='\n')
 
-    for article in articles:
-        date = utilites.date_beautify(article.find('span', class_='post__time').text)
-        link = article.find('a', class_='post__title_link').get('href')
-        title = article.find('a', class_='post__title_link').text
-        preview = article.find('div', class_='post__text').text.strip()
-
-        if re.search(keywords_pattern, preview, flags=re.I):
-            find_keywords_in_preview += (f"<{date}> - <{title}> - <{link}>",)
-
-    print(*find_keywords_in_preview, sep='\n')
+    print(f'\nНайдено статей по ключевым словам в тексте статьи [{len(find_in_article)}]:')
+    print(*find_in_article, sep='\n')
 
 
 if __name__ == "__main__":
-    main()
+    KEYWORDS = ['дизайн', 'фото', 'web', 'python']
+    source_url = 'https://habr.com/ru/all/'
+    main(source_url, KEYWORDS)
